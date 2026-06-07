@@ -23,7 +23,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     label: 'Dashboard',
-    href: '/',
+    href: '/dashboard',
     icon: <LayoutDashboard className="w-4 h-4" />,
   },
   {
@@ -47,7 +47,7 @@ const navItems: NavItem[] = [
   },
   {
     label: 'Kelola User',
-    href: '/users',
+    href: '/settings/users',
     icon: <Users className="w-4 h-4" />,
     roles: ['super_admin'],
   },

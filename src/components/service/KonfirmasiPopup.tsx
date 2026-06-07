@@ -6,7 +6,7 @@ import { makeWALink, templateKonfirmasiSelesai } from '@/lib/fonte'
 import { formatRupiah, TIPE_LABEL } from '@/lib/utils'
 import type { ServiceLengkap } from '@/types'
 import { createClient } from '@/lib/supabase/client'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 
 interface Props {
   item: ServiceLengkap
@@ -16,7 +16,6 @@ interface Props {
 
 export default function KonfirmasiPopup({ item, onClose, onSent }: Props) {
   const supabase = createClient()
-  const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [catatan, setCatatan] = useState('')
@@ -61,13 +60,13 @@ export default function KonfirmasiPopup({ item, onClose, onSent }: Props) {
       const result = await res.json()
       if (result.status) {
         setSent(true)
-        toast({ title: 'Pesan terkirim!', description: `WA dikirim ke ${item.nama_customer}` })
+        toast.success(`WA dikirim ke ${item.nama_customer}`)
         setTimeout(() => onSent(), 1500)
       } else {
         throw new Error(result.message)
       }
     } catch (e: any) {
-      toast({ title: 'Gagal kirim', description: e.message, variant: 'destructive' })
+      toast.error(e.message)
     } finally {
       setLoading(false)
     }

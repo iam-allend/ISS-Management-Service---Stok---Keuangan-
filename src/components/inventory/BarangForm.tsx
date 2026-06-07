@@ -2,12 +2,14 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { barangSchema, type BarangSchema } from '@/lib/validations'
+import { barangSchema } from '@/lib/validations'
+import type { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
 import { useState, useEffect } from 'react'
 import { X, Loader2 } from 'lucide-react'
 import type { BarangLengkap, Grade } from '@/types'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
+
 
 interface Props {
   item: BarangLengkap | null
@@ -19,12 +21,21 @@ interface Props {
 
 export default function BarangForm({ item, kategoriList, gradeList, onClose, onSuccess }: Props) {
   const supabase = createClient()
-  const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [availableGrades, setAvailableGrades] = useState<Grade[]>(gradeList)
 
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<BarangSchema>({
-    resolver: zodResolver(barangSchema),
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+    } = useForm<
+      z.input<typeof barangSchema>,
+      unknown,
+      z.output<typeof barangSchema>
+    >({
+      resolver: zodResolver(barangSchema),
     defaultValues: {
       kode: item?.kode || '',
       nama: item?.nama || '',
@@ -60,7 +71,9 @@ export default function BarangForm({ item, kategoriList, gradeList, onClose, onS
     }
   }, [watchKategori, kategoriList, gradeList, setValue, watch])
 
-  const onSubmit = async (values: BarangSchema) => {
+  const onSubmit = async (
+    values: z.output<typeof barangSchema>
+  ) => {
     setLoading(true)
     try {
       const payload = {
@@ -72,16 +85,21 @@ export default function BarangForm({ item, kategoriList, gradeList, onClose, onS
       if (item) {
         const { error } = await supabase.from('barang').update(payload).eq('id', item.id)
         if (error) throw error
-        toast({ title: 'Berhasil', description: 'Barang diperbarui.' })
+        toast.success('Berhasil', { description: 'Barang diperbarui.' })
       } else {
         const { error } = await supabase.from('barang').insert(payload)
         if (error) throw error
-        toast({ title: 'Berhasil', description: 'Barang ditambahkan.' })
+        toast.success('Berhasil', { description: 'Barang ditambahkan.' })
       }
 
       onSuccess()
-    } catch (e: any) {
-      toast({ title: 'Gagal', description: e.message, variant: 'destructive' })
+      } catch (e: unknown) {
+      const message =
+        e instanceof Error
+          ? e.message
+          : 'Terjadi kesalahan'
+
+      toast.error(message)
     } finally {
       setLoading(false)
     }

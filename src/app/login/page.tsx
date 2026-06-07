@@ -22,16 +22,24 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    console.log('LOGIN RESULT', data)
+    console.log('LOGIN ERROR', error)
 
     if (error) {
-      setError('Email atau password salah.')
+      setError(error.message)
       setLoading(false)
       return
     }
 
-    router.push('/')
-    router.refresh()
+    // Tunggu session benar-benar tersimpan
+    await supabase.auth.getSession()
+
+    window.location.href = '/'
   }
 
   return (
