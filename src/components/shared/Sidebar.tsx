@@ -20,6 +20,8 @@ interface NavItem {
   roles?: string[]
 }
 
+
+
 const navItems: NavItem[] = [
   {
     label: 'Dashboard',
@@ -43,8 +45,8 @@ const navItems: NavItem[] = [
     label: 'Service',
     icon: <Wrench className="w-4 h-4" />,
     children: [
-      { label: 'Semua Service', href: '/service' },
-      { label: 'Tambah Service', href: '/service/baru' },
+      { label: 'Data Service', href: '/service' },
+      // { label: 'Tambah Service', href: '/service/baru' },
     ],
   },
 
@@ -94,6 +96,27 @@ export default function Sidebar({ profile }: { profile: Profile }) {
   const filteredNav = navItems.filter(item =>
     !item.roles || item.roles.includes(profile.role)
   )
+
+  const isChildActive = (href: string) => {
+    if (pathname === href) return true
+
+    // Service
+    if (href === '/service') {
+      return pathname.startsWith('/service/')
+    }
+
+    // Master Barang
+    if (href === '/inventory') {
+      return (
+        pathname.startsWith('/inventory/') &&
+        !pathname.startsWith('/inventory/stok-masuk') &&
+        !pathname.startsWith('/inventory/stok-keluar') &&
+        !pathname.startsWith('/inventory/stok-opname')
+      )
+    }
+
+    return pathname.startsWith(`${href}/`)
+  }
 
   return (
     <>
@@ -165,7 +188,7 @@ export default function Sidebar({ profile }: { profile: Profile }) {
                           href={child.href}
                           className={cn(
                             'flex items-center gap-2 pl-4 pr-4 py-2 text-sm transition',
-                            pathname === child.href
+                            isChildActive(child.href)
                               ? 'text-white bg-white/10 border-l-2 border-white -ml-px'
                               : 'text-gray-400 hover:text-white hover:bg-white/5'
                           )}

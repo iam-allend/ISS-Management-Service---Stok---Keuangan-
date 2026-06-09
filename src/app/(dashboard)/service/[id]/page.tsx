@@ -2,38 +2,84 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import ServiceDetailClient from './ServiceDetailClient'
 
-export default async function ServiceDetailPage({ params }: { params: { id: string } }) {
+export default async function ServiceDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+
   const supabase = await createClient()
 
-  const [{ data: nota }, { data: items }, { data: teknisiList }, { data: barangList }, { data: profile }] = await Promise.all([
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const [
+    { data: nota },
+    { data: items },
+    { data: teknisiList },
+    { data: barangList },
+    { data: profile },
+  ] = await Promise.all([
     supabase
       .from('nota_service')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single(),
+
     supabase
       .from('item_service')
-      .select('*, teknisi:teknisi_id(id, nama, kode_teknisi, no_wa), item_sparepart(*, barang:barang_id(kode, nama), grade:grade_id(nama, garansi_hari))')
-      .eq('nota_id', params.id)
+      .select(`
+        *,
+        teknisi:teknisi_id(
+          id,
+          nama,
+          kode_teknisi,
+          no_wa
+        ),
+        item_sparepart(
+          *,
+          barang:barang_id(
+            kode,
+            nama
+          ),
+          grade:grade_id(
+            nama,
+            garansi_hari
+          )
+        )
+      `)
+      .eq('nota_id', id)
       .order('created_at'),
+
     supabase
       .from('profiles')
       .select('id, nama, kode_teknisi')
       .eq('role', 'teknisi')
       .eq('aktif', true)
       .order('nama'),
+
     supabase
       .from('v_barang_lengkap')
-      .select('id, kode, nama, merk, grade_id, grade_nama, garansi_hari, harga_jual, stok')
-      .eq('aktif', true)
+      .select(
+        'id, kode, nama, merk, grade_id, grade_nama, garansi_hari, harga_jual, stok'
+      )
       .gt('stok', 0)
       .order('nama'),
-    supabase.from('profiles').select('id, role').single(),
+
+    supabase
+      .from('profiles')
+      .select('id, role')
+      .eq('id', user?.id)
+      .single(),
   ])
 
   if (!nota) notFound()
 
-  const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin'
+  const isAdmin =
+    profile?.role === 'admin' ||
+    profile?.role === 'super_admin'
 
   return (
     <ServiceDetailClient

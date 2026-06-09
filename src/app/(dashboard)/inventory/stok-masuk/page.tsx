@@ -4,6 +4,10 @@ import StokMasukClient from './StokMasukClient'
 export default async function StokMasukPage() {
   const supabase = await createClient()
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
   const [{ data: stokMasuk }, { data: barangList }, { data: profile }] =
     await Promise.all([
       supabase
@@ -22,7 +26,11 @@ export default async function StokMasukPage() {
         .eq('aktif', true)
         .order('nama'),
 
-      supabase.from('profiles').select('role, id').single(),
+      supabase
+        .from('profiles')
+        .select('role, id')
+        .eq('id', user?.id)
+        .single(),
     ])
 
   const isAdmin =

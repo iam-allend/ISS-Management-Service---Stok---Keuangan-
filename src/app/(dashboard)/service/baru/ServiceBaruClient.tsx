@@ -34,6 +34,9 @@ interface Props {
 }
 
 export default function ServiceBaruClient({ teknisiList, barangList, userId }: Props) {
+
+  console.log('BARANG LIST:', barangList)
+  
   const supabase = createClient()
   const router = useRouter()
 
