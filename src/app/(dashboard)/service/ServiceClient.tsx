@@ -378,11 +378,23 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
                                   : [...prev, svc.nota_id]
                               )
                             }
-                            className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                            className={cn(
+                              'inline-flex items-center gap-1.5 mt-1 px-2.5 py-1 rounded-md text-xs font-medium transition',
+                              isExpanded
+                                ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                                : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                            )}
                           >
+                            <ChevronDown
+                              className={cn(
+                                'w-3 h-3 transition-transform',
+                                isExpanded && 'rotate-180'
+                              )}
+                            />
+
                             {isExpanded
                               ? 'Sembunyikan Item'
-                              : `+${notaItems.length - 1} Item Lainnya`}
+                              : `${notaItems.length - 1} Item Lainnya`}
                           </button>
                         )}
                       </div>
@@ -427,16 +439,18 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-1">
                         {/* Direct WA (tanpa format) */}
-                        <a
-                          href={makeWALink(svc.no_wa)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title="Chat WA Customer"
-                          className="p-1.5 rounded-lg hover:bg-green-50 text-gray-400 hover:text-green-600 transition"
-                        >
-                          <Phone className="w-3.5 h-3.5" />
-                        </a>
-                        
+                        {isFirst && (
+                          <a
+                            href={makeWALink(svc.no_wa)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Chat WA Customer"
+                            className="p-1.5 rounded-lg hover:bg-green-50 text-gray-400 hover:text-green-600 transition"
+                          >
+                            <Phone className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+
                         {/* Konfirmasi selesai (terformat) */}
                         {isFirst &&
                           isAdmin &&
