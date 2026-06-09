@@ -27,19 +27,34 @@ export default function LoginPage() {
       password,
     })
 
-    console.log('LOGIN RESULT', data)
-    console.log('LOGIN ERROR', error)
-
     if (error) {
       setError(error.message)
       setLoading(false)
       return
     }
 
-    // Tunggu session benar-benar tersimpan
     await supabase.auth.getSession()
 
-    window.location.href = '/'
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .single()
+
+    switch (profile?.role) {
+      case 'admin':
+      case 'super_admin':
+        window.location.href = '/dashboard'
+        return
+
+      case 'teknisi':
+        window.location.href = '/service'
+        return
+
+      default:
+        window.location.href = '/'
+        return
+    }
   }
 
   return (

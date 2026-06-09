@@ -6,7 +6,11 @@ import { formatDate } from '@/lib/utils'
 import type { DashboardSummary } from '@/types'
 import Link from 'next/link'
 
+
 export default async function DashboardPage() {
+
+  console.log('=== DASHBOARD PAGE RENDERED ===')
+
   const supabase = await createClient()
 
   const { data: summary } = await supabase
@@ -28,6 +32,7 @@ export default async function DashboardPage() {
     .eq('aktif', true)
     .limit(5)
 
+    
   const cards = [
     {
       label: 'Total Barang',

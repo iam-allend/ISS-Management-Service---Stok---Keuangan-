@@ -26,6 +26,7 @@ const navItems: NavItem[] = [
     href: '/dashboard',
     icon: <LayoutDashboard className="w-4 h-4" />,
   },
+
   {
     label: 'Inventory',
     icon: <Package className="w-4 h-4" />,
@@ -37,6 +38,7 @@ const navItems: NavItem[] = [
     ],
     roles: ['super_admin', 'admin'],
   },
+
   {
     label: 'Service',
     icon: <Wrench className="w-4 h-4" />,
@@ -45,16 +47,24 @@ const navItems: NavItem[] = [
       { label: 'Tambah Service', href: '/service/baru' },
     ],
   },
+
   {
-    label: 'Kelola User',
-    href: '/settings/users',
-    icon: <Users className="w-4 h-4" />,
-    roles: ['super_admin'],
-  },
-  {
-    label: 'Pengaturan Sistem',
-    href: '/settings',
+    label: 'Pengaturan',
     icon: <Settings className="w-4 h-4" />,
+    children: [
+      {
+        label: 'Kelola User',
+        href: '/settings/users',
+      },
+      {
+        label: 'Kategori',
+        href: '/settings/kategori',
+      },
+      {
+        label: 'Grade',
+        href: '/settings/grade',
+      },
+    ],
     roles: ['super_admin'],
   },
 ]
@@ -63,7 +73,11 @@ export default function Sidebar({ profile }: { profile: Profile }) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
-  const [openMenus, setOpenMenus] = useState<string[]>(['Inventory', 'Service'])
+  const [openMenus, setOpenMenus] = useState<string[]>([
+    'Inventory',
+    'Service',
+    'Pengaturan',
+  ])
   const [collapsed, setCollapsed] = useState(false)
 
   const toggleMenu = (label: string) => {
