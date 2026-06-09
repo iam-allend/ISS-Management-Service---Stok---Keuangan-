@@ -51,7 +51,8 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
   const [filterStatusAmbil, setFilterStatusAmbil] = useState<string>('all')
 
   // Popup
-  const [konfirmasiItem, setKonfirmasiItem] = useState<ServiceLengkap | null>(null)
+  const [konfirmasiNota, setKonfirmasiNota] = useState<any>(null)
+  const [expandedNotas, setExpandedNotas] = useState<string[]>([])
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
@@ -124,6 +125,45 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
   const hasFilter = search || filterStatus !== 'all' || filterTipe !== 'all' ||
     filterTeknisi !== 'all' || filterStatusAmbil !== 'all' || filterDateMode
 
+    const handleKonfirmasiNota = (svc: ServiceLengkap) => {
+    const semuaItem = data.filter(
+      x => x.nota_id === svc.nota_id
+    )
+
+    const totalBiaya = semuaItem.reduce(
+      (sum, x) => sum + (x.biaya || 0),
+      0
+    )
+
+    setKonfirmasiNota({
+      nota_id: svc.nota_id,
+      no_nota: svc.no_nota,
+      nama_customer: svc.nama_customer,
+      no_wa: svc.no_wa,
+      tipe_hp: svc.tipe_hp,
+      total_biaya: totalBiaya,
+      items: semuaItem,
+    })
+  }
+
+  const isFirstItemOfNota = (
+    svc: ServiceLengkap
+  ) => {
+    return (
+      filtered.find(
+        x => x.nota_id === svc.nota_id
+      )?.item_id === svc.item_id
+    )
+  }
+
+  const getItemsInNota = (
+    notaId: string
+  ) => {
+    return filtered.filter(
+      x => x.nota_id === notaId
+    )
+  }
+  
   return (
     <div className="space-y-5">
       {/* Header */}
@@ -254,19 +294,64 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
               ) : filtered.map(svc => {
                 const durasi = getDurasiConfig(svc.hari_berlalu)
                 const showDurasi = !svc.status_ambil && svc.status !== 'diambil' && svc.status !== 'cancel'
+                
+                const notaItems =
+                  getItemsInNota(svc.nota_id)
+
+                const isFirst =
+                  isFirstItemOfNota(svc)
+
+                const isExpanded =
+                  expandedNotas.includes(
+                    svc.nota_id
+                  )
+                if (!isFirst && !isExpanded) {
+                    return null
+                  }
+                // if (shouldHide) return null
 
                 return (
-                  <tr key={svc.item_id} className="hover:bg-gray-50 transition">
+                  <tr
+                    key={svc.item_id}
+                    className={cn(
+                      'transition',
+                      isFirst
+                        ? 'hover:bg-gray-50'
+                        : 'bg-gray-50/70 hover:bg-gray-100'
+                    )}
+                  >
                     {/* Nota / Customer */}
+                    
                     <td className="px-4 py-3">
-                      <Link href={`/service/${svc.nota_id}`} className="block">
-                        <p className="font-medium text-blue-600 hover:underline">{svc.no_nota}</p>
-                        <p className="text-xs text-gray-500">{svc.nama_customer}</p>
-                        <p className="text-xs text-gray-400">{formatDate(svc.tanggal_masuk)}</p>
-                      </Link>
+                      {isFirst ? (
+                        <Link
+                          href={`/service/${svc.nota_id}`}
+                          className="block"
+                        >
+                          <p className="font-medium text-blue-600 hover:underline">
+                            {svc.no_nota}
+                          </p>
+
+                          <p className="text-xs text-gray-500">
+                            {svc.nama_customer}
+                          </p>
+
+                          <p className="text-xs text-gray-400">
+                            {formatDate(svc.tanggal_masuk)}
+                          </p>
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-gray-400 pl-6">
+                          └ Item Tambahan
+                        </span>
+                      )}
                     </td>
+
                     {/* Unit */}
-                    <td className="px-4 py-3 text-gray-700">{svc.tipe_hp}</td>
+                    <td className="px-4 py-3 text-gray-700">
+                      {isFirst ? svc.tipe_hp : ''}
+                    </td>
+
                     {/* Service */}
                     <td className="px-4 py-3">
                       <span className={cn(
@@ -277,7 +362,30 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
                       )}>
                         {TIPE_LABEL[svc.tipe_service]}
                       </span>
-                      <p className="text-xs text-gray-600 truncate max-w-[160px]">{svc.jenis_kerusakan}</p>
+                      <div className="space-y-1">
+                        <p className="text-xs text-gray-600">
+                          {svc.jenis_kerusakan}
+                        </p>
+
+                        {isFirst && notaItems.length > 1 && (
+                          <button
+                            onClick={() =>
+                              setExpandedNotas(prev =>
+                                prev.includes(svc.nota_id)
+                                  ? prev.filter(
+                                      x => x !== svc.nota_id
+                                    )
+                                  : [...prev, svc.nota_id]
+                              )
+                            }
+                            className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                          >
+                            {isExpanded
+                              ? 'Sembunyikan Item'
+                              : `+${notaItems.length - 1} Item Lainnya`}
+                          </button>
+                        )}
+                      </div>
                     </td>
                     {/* Teknisi */}
                     <td className="px-4 py-3 text-xs text-gray-500">
@@ -314,6 +422,7 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
                     <td className="px-4 py-3 text-right font-medium text-gray-800">
                       {formatRupiah(svc.biaya)}
                     </td>
+                    
                     {/* Aksi */}
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-1">
@@ -327,23 +436,28 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
                         >
                           <Phone className="w-3.5 h-3.5" />
                         </a>
+                        
                         {/* Konfirmasi selesai (terformat) */}
-                        {isAdmin && svc.status === 'selesai' && (
+                        {isFirst &&
+                          isAdmin &&
+                          svc.status === 'selesai' && (
                           <button
-                            onClick={() => setKonfirmasiItem(svc)}
-                            title="Konfirmasi Selesai ke Customer"
+                            onClick={() => handleKonfirmasiNota(svc)}
+                            title="Konfirmasi Service"
                             className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition"
                           >
                             <MessageCircle className="w-3.5 h-3.5" />
                           </button>
                         )}
                         {/* Edit — link ke detail */}
-                        <Link href={`/service/${svc.nota_id}`}
-                          title="Detail & Edit"
-                          className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </Link>
+                        {isFirst && (
+                          <Link href={`/service/${svc.nota_id}`}
+                            title="Detail & Edit"
+                            className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </Link>
+                        )}
                         {/* Hapus */}
                         {isAdmin && (
                           <button
@@ -365,11 +479,14 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
       </div>
 
       {/* Konfirmasi Popup */}
-      {konfirmasiItem && (
+      {konfirmasiNota && (
         <KonfirmasiPopup
-          item={konfirmasiItem}
-          onClose={() => setKonfirmasiItem(null)}
-          onSent={() => { setKonfirmasiItem(null); refresh() }}
+          item={konfirmasiNota}
+          onClose={() => setKonfirmasiNota(null)}
+          onSent={() => {
+            setKonfirmasiNota(null)
+            refresh()
+          }}
         />
       )}
 

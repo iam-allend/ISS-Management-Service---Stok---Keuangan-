@@ -9,7 +9,23 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 
 interface Props {
-  item: ServiceLengkap
+  item: {
+    no_nota: string
+    nota_id: string
+    nama_customer: string
+    no_wa: string
+    tipe_hp: string
+    total_biaya: number
+
+    items: {
+      item_id: string
+      tipe_service: string
+      jenis_kerusakan: string
+      biaya: number
+      garansi_hari: number | null
+    }[]
+  }
+
   onClose: () => void
   onSent: () => void
 }
@@ -26,13 +42,15 @@ export default function KonfirmasiPopup({ item, onClose, onSent }: Props) {
       no_nota: item.no_nota,
       nama_customer: item.nama_customer,
       tipe_hp: item.tipe_hp,
-      items: [{
-        tipe: item.tipe_service,
-        jenis_kerusakan: item.jenis_kerusakan,
-        biaya: item.biaya,
-        garansi_hari: item.garansi_hari,
-      }],
-      total_biaya: item.biaya,
+
+      items: item.items.map(i => ({
+        tipe: i.tipe_service,
+        jenis_kerusakan: i.jenis_kerusakan,
+        biaya: i.biaya,
+        garansi_hari: i.garansi_hari,
+      })),
+
+      total_biaya: item.total_biaya,
       catatan,
     })
   }
@@ -53,7 +71,7 @@ export default function KonfirmasiPopup({ item, onClose, onSent }: Props) {
           target: item.no_wa,
           message: pesan,
           nota_id: item.nota_id,
-          item_service_id: item.item_id,
+          item_service_id: null,
           tipe: 'selesai_konfirmasi',
         }),
       })
@@ -82,7 +100,7 @@ export default function KonfirmasiPopup({ item, onClose, onSent }: Props) {
         target: item.no_wa,
         message: pesan,
         nota_id: item.nota_id,
-        item_service_id: item.item_id,
+        item_service_id: null,
         tipe: 'selesai_konfirmasi',
       }),
     }).then(() => onSent())
@@ -119,7 +137,9 @@ export default function KonfirmasiPopup({ item, onClose, onSent }: Props) {
             </div>
             <div>
               <p className="text-xs text-gray-400">Total Biaya</p>
-              <p className="font-bold text-green-700">{formatRupiah(item.biaya)}</p>
+              <p className="font-bold text-green-700">
+                {formatRupiah(item.total_biaya)}
+              </p>
             </div>
           </div>
 

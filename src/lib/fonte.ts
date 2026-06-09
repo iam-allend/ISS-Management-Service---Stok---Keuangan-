@@ -86,33 +86,63 @@ export function templateKonfirmasiSelesai(data: {
   no_nota: string
   nama_customer: string
   tipe_hp: string
-  items: { tipe: string; jenis_kerusakan: string; biaya: number; garansi_hari: number | null }[]
+
+  items: {
+    tipe: string
+    jenis_kerusakan: string
+    biaya: number
+    garansi_hari: number | null
+  }[]
+
   total_biaya: number
   catatan?: string
 }): string {
-  const itemLines = data.items.map(item => {
-    const garansi = item.garansi_hari
-      ? `Garansi ${item.garansi_hari} hari`
-      : 'Tanpa garansi'
-    const tipeLabel = item.tipe === 'mesin' ? 'Service Mesin' : 'Ganti Sparepart'
-    return `• ${tipeLabel}: ${item.jenis_kerusakan}\n  Biaya: Rp ${item.biaya.toLocaleString('id-ID')} | ${garansi}`
-  }).join('\n')
+  const detail = data.items
+    .map((item, index) => {
+      const tipe =
+        item.tipe === 'mesin'
+          ? 'Service Mesin'
+          : 'Ganti Sparepart'
+
+      const garansi =
+        item.garansi_hari
+          ? `${item.garansi_hari} Hari`
+          : '-'
+
+      return `${index + 1}. ${tipe}
+• ${item.jenis_kerusakan}
+• Biaya: Rp ${item.biaya.toLocaleString('id-ID')}
+• Garansi: ${garansi}`
+    })
+    .join('\n\n')
+
+  const maxGaransi = Math.max(
+    ...data.items.map(i => i.garansi_hari || 0),
+    0
+  )
 
   return `✅ *SERVICE SELESAI*
 
-Halo *${data.nama_customer}*, unit Anda sudah selesai diperbaiki!
+Halo *${data.nama_customer}* 👋
+Unit *${data.tipe_hp}*
+📋 No Nota: *${data.no_nota}*
 
-📋 *No. Nota:* ${data.no_nota}
-📱 *Unit:* ${data.tipe_hp}
+Telah selesai dikerjakan.
 
-🔧 *Detail Service:*
-${itemLines}
+━━━━━━━━━━━━━━
+🔧 DETAIL PEKERJAAN
+━━━━━━━━━━━━━━
 
-💰 *Total Biaya: Rp ${data.total_biaya.toLocaleString('id-ID')}*
-${data.catatan ? `\n📝 *Catatan:* ${data.catatan}` : ''}
+${detail}
 
-Silakan ambil unit Anda di toko kami. Terima kasih! 🙏
+━━━━━━━━━━━━━━
+💰 TOTAL BIAYA = Rp. ${data.total_biaya.toLocaleString('id-ID')}
+━━━━━━━━━━━━━━
 
+${data.catatan ? `📝 Catatan:\n${data.catatan}\n` : ''}
+
+Silakan datang ke toko untuk pengambilan unit.
+Terima kasih 🙏
 _iPhone Service Solution_`
 }
 

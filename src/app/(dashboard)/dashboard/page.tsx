@@ -9,8 +9,6 @@ import Link from 'next/link'
 
 export default async function DashboardPage() {
 
-  console.log('=== DASHBOARD PAGE RENDERED ===')
-
   const supabase = await createClient()
 
   const { data: summary } = await supabase
