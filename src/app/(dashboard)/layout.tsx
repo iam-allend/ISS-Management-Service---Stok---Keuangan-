@@ -1,29 +1,26 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
-import Sidebar from '@/components/shared/Sidebar'
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import Sidebar from "@/components/shared/Sidebar";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!user) redirect('/login')
+  if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
+  // FIX: filter eksplisit pakai user.id
+  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
 
-  if (!profile) redirect('/login')
+  if (!profile) redirect("/login");
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       <Sidebar profile={profile} />
       <main className="flex-1 overflow-y-auto">
-        <div className="p-6">
-          {children}
-        </div>
+        <div className="p-6">{children}</div>
       </main>
     </div>
-  )
+  );
 }
