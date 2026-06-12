@@ -1,42 +1,42 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { Search, Smartphone, CheckCircle, Clock, Wrench, Package, Loader2 } from 'lucide-react'
-import { formatDate, STATUS_LABEL, STATUS_COLOR, TIPE_LABEL, formatRupiah, getGaransiStatus } from '@/lib/utils'
-import type { TrackingData } from '@/types'
-import { cn } from '@/lib/utils'
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { Search, Smartphone, CheckCircle, Clock, Wrench, Package, Loader2 } from "lucide-react";
+import { formatDate, STATUS_LABEL, STATUS_COLOR, TIPE_LABEL, formatRupiah, getGaransiStatus } from "@/lib/utils";
+import type { TrackingData } from "@/types";
+import { cn } from "@/lib/utils";
 
 export default function TrackPage() {
-  const supabase = createClient()
-  const [noNota, setNoNota] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<TrackingData | null>(null)
-  const [notFound, setNotFound] = useState(false)
+  const supabase = createClient();
+  const [noNota, setNoNota] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<TrackingData | null>(null);
+  const [notFound, setNotFound] = useState(false);
 
   async function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    if (!noNota.trim()) return
+    e.preventDefault();
+    if (!noNota.trim()) return;
 
-    setLoading(true)
-    setResult(null)
-    setNotFound(false)
+    setLoading(true);
+    setResult(null);
+    setNotFound(false);
 
-    const { data, error } = await supabase.rpc('get_tracking_by_nota', {
-      p_no_nota: noNota.trim().toUpperCase()
-    })
+    const { data, error } = await supabase.rpc("get_tracking_by_nota", {
+      p_no_nota: noNota.trim().toUpperCase(),
+    });
 
-    setLoading(false)
+    setLoading(false);
 
     if (error || !data || data.length === 0) {
-      setNotFound(true)
-      return
+      setNotFound(true);
+      return;
     }
 
-    setResult(data[0] as TrackingData)
+    setResult(data[0] as TrackingData);
   }
 
-  const totalBiaya = result?.items.reduce((sum, i) => sum + (i.biaya || 0), 0) ?? 0
+  const totalBiaya = result?.items.reduce((sum, i) => sum + (i.biaya || 0), 0) ?? 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -55,15 +55,11 @@ export default function TrackPage() {
           <input
             type="text"
             value={noNota}
-            onChange={e => setNoNota(e.target.value)}
+            onChange={(e) => setNoNota(e.target.value)}
             placeholder="Masukkan No. Nota (contoh: SVC/2506/1234)"
             className="flex-1 px-4 py-3 rounded-xl bg-white/10 backdrop-blur text-white placeholder-gray-400 border border-white/10 focus:outline-none focus:border-white/30 text-sm"
           />
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-5 py-3 rounded-xl bg-white text-gray-900 font-medium text-sm hover:bg-gray-100 transition disabled:opacity-60 flex items-center gap-2"
-          >
+          <button type="submit" disabled={loading} className="px-5 py-3 rounded-xl bg-white text-gray-900 font-medium text-sm hover:bg-gray-100 transition disabled:opacity-60 flex items-center gap-2">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
             Cek
           </button>
@@ -122,31 +118,19 @@ export default function TrackPage() {
 
             {/* Detail Service Items */}
             {result.items.map((item, idx) => {
-              const garansi = getGaransiStatus(item.garansi_mulai, item.garansi_hari)
+              const garansi = getGaransiStatus(item.garansi_mulai, item.garansi_hari);
               return (
                 <div key={idx} className="bg-white rounded-2xl p-5 shadow-xl">
                   <div className="flex items-center gap-2 mb-3">
-                    {item.tipe === 'mesin'
-                      ? <Wrench className="w-4 h-4 text-purple-500" />
-                      : <Package className="w-4 h-4 text-blue-500" />
-                    }
-                    <span className="text-sm font-semibold text-gray-700">
-                      {TIPE_LABEL[item.tipe]}
-                    </span>
-                    <span className={cn(
-                      'ml-auto text-xs px-2 py-1 rounded-full border font-medium',
-                      STATUS_COLOR[item.status]
-                    )}>
-                      {STATUS_LABEL[item.status]}
-                    </span>
+                    {item.tipe === "mesin" ? <Wrench className="w-4 h-4 text-purple-500" /> : <Package className="w-4 h-4 text-blue-500" />}
+                    <span className="text-sm font-semibold text-gray-700">{TIPE_LABEL[item.tipe]}</span>
+                    <span className={cn("ml-auto text-xs px-2 py-1 rounded-full border font-medium", STATUS_COLOR[item.status])}>{STATUS_LABEL[item.status]}</span>
                   </div>
 
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-400">Kerusakan</span>
-                      <span className="font-medium text-gray-800 text-right max-w-[60%]">
-                        {item.jenis_kerusakan}
-                      </span>
+                      <span className="font-medium text-gray-800 text-right max-w-[60%]">{item.jenis_kerusakan}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-400">Biaya</span>
@@ -167,18 +151,16 @@ export default function TrackPage() {
                     {item.garansi_hari && (
                       <div className="flex justify-between items-start">
                         <span className="text-gray-400">Garansi</span>
-                        <span className={cn('font-medium text-right max-w-[60%]', garansi.color)}>
-                          {item.garansi_mulai ? garansi.label : `${item.garansi_hari} hari (berlaku setelah diambil)`}
-                        </span>
+                        <span className={cn("font-medium text-right max-w-[60%]", garansi.color)}>{item.garansi_mulai ? garansi.label : `${item.garansi_hari} hari (berlaku setelah diambil)`}</span>
                       </div>
                     )}
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
