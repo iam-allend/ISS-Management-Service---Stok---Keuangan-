@@ -1,59 +1,55 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Loader2, Smartphone } from 'lucide-react'
+import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { Loader2, Smartphone } from "lucide-react";
 
 export default function LoginPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const supabase = createClient()
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const supabase = createClient();
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const accountInactive = searchParams.get('error') === 'account_inactive'
+  const accountInactive = searchParams.get("error") === "account_inactive";
 
   async function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
+    });
 
     if (error) {
-      setError(error.message)
-      setLoading(false)
-      return
+      setError(error.message);
+      setLoading(false);
+      return;
     }
 
-    await supabase.auth.getSession()
+    await supabase.auth.getSession();
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', data.user.id)
-      .single()
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", data.user.id).single();
 
     switch (profile?.role) {
-      case 'admin':
-      case 'super_admin':
-        window.location.href = '/dashboard'
-        return
+      case "admin":
+      case "super_admin":
+        window.location.href = "/dashboard";
+        return;
 
-      case 'teknisi':
-        window.location.href = '/service'
-        return
+      case "teknisi":
+        window.location.href = "/service";
+        return;
 
       default:
-        window.location.href = '/'
-        return
+        window.location.href = "/";
+        return;
     }
   }
 
@@ -71,11 +67,7 @@ export default function LoginPage() {
 
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-2xl p-8">
-          {accountInactive && (
-            <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-              Akun Anda tidak aktif. Hubungi administrator.
-            </div>
-          )}
+          {accountInactive && <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">Akun Anda tidak aktif. Hubungi administrator.</div>}
 
           <h2 className="text-lg font-semibold text-gray-800 mb-6">Masuk ke Sistem</h2>
 
@@ -85,10 +77,10 @@ export default function LoginPage() {
               <input
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="email@domain.com"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent transition"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 text-gray-500 focus:border-transparent transition"
               />
             </div>
 
@@ -97,32 +89,24 @@ export default function LoginPage() {
               <input
                 type="password"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="••••••••"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent transition"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 text-gray-500 focus:border-transparent transition"
               />
             </div>
 
-            {error && (
-              <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
-            )}
+            {error && <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-gray-900 hover:bg-gray-700 text-white font-medium text-sm transition disabled:opacity-60"
-            >
+            <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-gray-900 hover:bg-gray-700 text-white font-medium text-sm transition disabled:opacity-60">
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-              {loading ? 'Memproses...' : 'Masuk'}
+              {loading ? "Memproses..." : "Masuk"}
             </button>
           </form>
 
-          <p className="text-center text-xs text-gray-400 mt-6">
-            Hanya untuk staf yang berwenang
-          </p>
+          <p className="text-center text-xs text-gray-400 mt-6">Hanya untuk staf yang berwenang</p>
         </div>
       </div>
     </div>
-  )
+  );
 }

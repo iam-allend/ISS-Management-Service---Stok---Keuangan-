@@ -202,7 +202,12 @@ export default function KategoriClient({ initialData, gradeList }: Props) {
       <div className="flex gap-3 items-center">
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Cari kategori..." className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari kategori..."
+            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-300 text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
+          />
         </div>
         <button onClick={refresh} disabled={loading} className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition">
           <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
@@ -278,7 +283,7 @@ export default function KategoriClient({ initialData, gradeList }: Props) {
                   value={nama}
                   onChange={(e) => setNama(e.target.value)}
                   placeholder="misal: LCD, Baterai, Kamera"
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
                 />
               </div>
 
@@ -290,7 +295,7 @@ export default function KategoriClient({ initialData, gradeList }: Props) {
                   onChange={(e) => setDeskripsi(e.target.value)}
                   rows={2}
                   placeholder="Keterangan tambahan (opsional)"
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 resize-none"
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500 resize-none"
                 />
               </div>
 

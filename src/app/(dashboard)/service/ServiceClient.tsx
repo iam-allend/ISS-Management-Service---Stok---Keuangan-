@@ -208,11 +208,11 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari nota, customer, HP, kerusakan..."
-              className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
             />
           </div>
           {/* Status */}
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300">
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500">
             {STATUS_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
                 {o.label}
@@ -220,13 +220,13 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
             ))}
           </select>
           {/* Tipe */}
-          <select value={filterTipe} onChange={(e) => setFilterTipe(e.target.value)} className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300">
+          <select value={filterTipe} onChange={(e) => setFilterTipe(e.target.value)} className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500">
             <option value="all">Semua Tipe</option>
             <option value="mesin">Service Mesin</option>
             <option value="interface">Ganti Sparepart</option>
           </select>
           {/* Teknisi */}
-          <select value={filterTeknisi} onChange={(e) => setFilterTeknisi(e.target.value)} className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300">
+          <select value={filterTeknisi} onChange={(e) => setFilterTeknisi(e.target.value)} className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500">
             <option value="all">Semua Teknisi</option>
             {teknisiList.map((t) => (
               <option key={t.id} value={t.nama}>
@@ -235,7 +235,7 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
             ))}
           </select>
           {/* Status Ambil */}
-          <select value={filterStatusAmbil} onChange={(e) => setFilterStatusAmbil(e.target.value)} className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300">
+          <select value={filterStatusAmbil} onChange={(e) => setFilterStatusAmbil(e.target.value)} className="px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500">
             <option value="all">Semua</option>
             <option value="false">Belum Diambil</option>
             <option value="true">Sudah Diambil</option>
@@ -268,9 +268,19 @@ export default function ServiceClient({ initialData, teknisiList, currentProfile
           </div>
           {filterDateMode && (
             <>
-              <input type="date" value={filterDateDari} onChange={(e) => setFilterDateDari(e.target.value)} className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300" />
+              <input
+                type="date"
+                value={filterDateDari}
+                onChange={(e) => setFilterDateDari(e.target.value)}
+                className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
+              />
               <span className="text-gray-400 text-xs">s/d</span>
-              <input type="date" value={filterDateSampai} onChange={(e) => setFilterDateSampai(e.target.value)} className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300" />
+              <input
+                type="date"
+                value={filterDateSampai}
+                onChange={(e) => setFilterDateSampai(e.target.value)}
+                className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
+              />
             </>
           )}
         </div>

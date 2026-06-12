@@ -1,115 +1,95 @@
-'use client'
+"use client";
 
-import { useState, useMemo, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import {
-  Plus, Search, Filter, Edit2, Trash2, Package,
-  AlertTriangle, Upload, RefreshCw, X
-} from 'lucide-react'
-import { formatRupiah, cn } from '@/lib/utils'
-import type { BarangLengkap, Kategori, Grade } from '@/types'
-import BarangForm from '@/components/inventory/BarangForm'
-import ImportBarangModal from '@/components/inventory/ImportBarangModal'
-import { toast } from 'sonner'
+import { useState, useMemo, useCallback } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { Plus, Search, Filter, Edit2, Trash2, Package, AlertTriangle, Upload, RefreshCw, X } from "lucide-react";
+import { formatRupiah, cn } from "@/lib/utils";
+import type { BarangLengkap, Kategori, Grade } from "@/types";
+import BarangForm from "@/components/inventory/BarangForm";
+import ImportBarangModal from "@/components/inventory/ImportBarangModal";
+import { toast } from "sonner";
 
 interface Props {
-  initialData: BarangLengkap[]
-  kategoriList: any[]
-  gradeList: Grade[]
-  canEdit: boolean
+  initialData: BarangLengkap[];
+  kategoriList: any[];
+  gradeList: Grade[];
+  canEdit: boolean;
 }
 
 export default function BarangClient({ initialData, kategoriList, gradeList, canEdit }: Props) {
-  const supabase = createClient()
- 
-  const [data, setData] = useState<BarangLengkap[]>(initialData)
-  const [loading, setLoading] = useState(false)
-  const [showForm, setShowForm] = useState(false)
-  const [showImport, setShowImport] = useState(false)
-  const [editItem, setEditItem] = useState<BarangLengkap | null>(null)
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const supabase = createClient();
+
+  const [data, setData] = useState<BarangLengkap[]>(initialData);
+  const [loading, setLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+  const [editItem, setEditItem] = useState<BarangLengkap | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   // Filters
-  const [search, setSearch] = useState('')
-  const [filterKategori, setFilterKategori] = useState('all')
-  const [filterGrade, setFilterGrade] = useState('all')
-  const [filterStokRendah, setFilterStokRendah] = useState(false)
+  const [search, setSearch] = useState("");
+  const [filterKategori, setFilterKategori] = useState("all");
+  const [filterGrade, setFilterGrade] = useState("all");
+  const [filterStokRendah, setFilterStokRendah] = useState(false);
 
   const filtered = useMemo(() => {
     return data.filter((b) => {
-      const q = search.toLowerCase()
+      const q = search.toLowerCase();
 
-      if (
-        q &&
-        !b.nama?.toLowerCase().includes(q) &&
-        !b.kode?.toLowerCase().includes(q) &&
-        !b.merk?.toLowerCase().includes(q)
-      ) {
-        return false
+      if (q && !b.nama?.toLowerCase().includes(q) && !b.kode?.toLowerCase().includes(q) && !b.merk?.toLowerCase().includes(q)) {
+        return false;
       }
 
-      if (filterKategori !== 'all') {
-        const kategori = kategoriList.find(
-          (k) => k.id === filterKategori
-        )
+      if (filterKategori !== "all") {
+        const kategori = kategoriList.find((k) => k.id === filterKategori);
 
         if (b.kategori_nama !== kategori?.nama) {
-          return false
+          return false;
         }
       }
 
-      if (filterGrade !== 'all') {
-        const grade = gradeList.find(
-          (g) => g.id === filterGrade
-        )
+      if (filterGrade !== "all") {
+        const grade = gradeList.find((g) => g.id === filterGrade);
 
         if (b.grade_nama !== grade?.nama) {
-          return false
+          return false;
         }
       }
 
       if (filterStokRendah && !b.stok_rendah) {
-        return false
+        return false;
       }
 
-      return true
-    })
-  }, [
-    data,
-    search,
-    filterKategori,
-    filterGrade,
-    filterStokRendah,
-    kategoriList,
-    gradeList,
-  ])
+      return true;
+    });
+  }, [data, search, filterKategori, filterGrade, filterStokRendah, kategoriList, gradeList]);
 
   const refresh = useCallback(async () => {
-    setLoading(true)
-    const { data: fresh } = await supabase.from('v_barang_lengkap').select('*').order('nama')
-    if (fresh) setData(fresh as BarangLengkap[])
-    setLoading(false)
-  }, [supabase])
+    setLoading(true);
+    const { data: fresh } = await supabase.from("v_barang_lengkap").select("*").order("nama");
+    if (fresh) setData(fresh as BarangLengkap[]);
+    setLoading(false);
+  }, [supabase]);
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from('barang').update({ aktif: false }).eq('id', id)
+    const { error } = await supabase.from("barang").update({ aktif: false }).eq("id", id);
     if (error) {
-      toast.error('Gagal', { description: error.message })
-      return
+      toast.error("Gagal", { description: error.message });
+      return;
     }
-    toast.success('Berhasil', { description: 'Barang dinonaktifkan.' })
-    setDeleteConfirm(null)
-    refresh()
-  }
+    toast.success("Berhasil", { description: "Barang dinonaktifkan." });
+    setDeleteConfirm(null);
+    refresh();
+  };
 
   const resetFilters = () => {
-    setSearch('')
-    setFilterKategori('all')
-    setFilterGrade('all')
-    setFilterStokRendah(false)
-  }
+    setSearch("");
+    setFilterKategori("all");
+    setFilterGrade("all");
+    setFilterStokRendah(false);
+  };
 
-  const hasFilter = search || filterKategori !== 'all' || filterGrade !== 'all' || filterStokRendah
+  const hasFilter = search || filterKategori !== "all" || filterGrade !== "all" || filterStokRendah;
 
   return (
     <div className="space-y-5">
@@ -119,23 +99,19 @@ export default function BarangClient({ initialData, kategoriList, gradeList, can
           <h1 className="text-xl font-bold text-gray-900">Master Barang</h1>
           <p className="text-sm text-gray-500">
             {filtered.length} dari {data.length} barang
-            {data.filter(b => b.stok_rendah).length > 0 && (
-              <span className="ml-2 text-orange-500 font-medium">
-                · {data.filter(b => b.stok_rendah).length} stok rendah
-              </span>
-            )}
+            {data.filter((b) => b.stok_rendah).length > 0 && <span className="ml-2 text-orange-500 font-medium">· {data.filter((b) => b.stok_rendah).length} stok rendah</span>}
           </p>
         </div>
         {canEdit && (
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowImport(true)}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border border-gray-200 hover:bg-gray-50 transition text-gray-600"
-            >
+            <button onClick={() => setShowImport(true)} className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border border-gray-200 hover:bg-gray-50 transition text-gray-600">
               <Upload className="w-4 h-4" /> Import Excel
             </button>
             <button
-              onClick={() => { setEditItem(null); setShowForm(true) }}
+              onClick={() => {
+                setEditItem(null);
+                setShowForm(true);
+              }}
               className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition"
             >
               <Plus className="w-4 h-4" /> Tambah Barang
@@ -153,45 +129,36 @@ export default function BarangClient({ initialData, kategoriList, gradeList, can
             <input
               type="text"
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari kode, nama, merk..."
-              className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
             />
           </div>
 
           {/* Kategori */}
-          <select
-            value={filterKategori}
-            onChange={e => setFilterKategori(e.target.value)}
-            className="px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
-          >
+          <select value={filterKategori} onChange={(e) => setFilterKategori(e.target.value)} className="px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white text-gray-500">
             <option value="all">Semua Kategori</option>
-            {kategoriList.map(k => (
-              <option key={k.id} value={k.id}>{k.nama}</option>
+            {kategoriList.map((k) => (
+              <option key={k.id} value={k.id}>
+                {k.nama}
+              </option>
             ))}
           </select>
 
           {/* Grade */}
-          <select
-            value={filterGrade}
-            onChange={e => setFilterGrade(e.target.value)}
-            className="px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white"
-          >
+          <select value={filterGrade} onChange={(e) => setFilterGrade(e.target.value)} className="px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 bg-white text-gray-500">
             <option value="all">Semua Grade</option>
-            {gradeList.map(g => (
-              <option key={g.id} value={g.id}>{g.nama}</option>
+            {gradeList.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.nama}
+              </option>
             ))}
           </select>
 
           {/* Stok Rendah Toggle */}
           <button
             onClick={() => setFilterStokRendah(!filterStokRendah)}
-            className={cn(
-              'flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border transition',
-              filterStokRendah
-                ? 'bg-orange-50 border-orange-200 text-orange-700'
-                : 'border-gray-200 text-gray-500 hover:bg-gray-50'
-            )}
+            className={cn("flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border transition", filterStokRendah ? "bg-orange-50 border-orange-200 text-orange-700" : "border-gray-200 text-gray-500 hover:bg-gray-50")}
           >
             <AlertTriangle className="w-4 h-4" />
             Stok Rendah
@@ -204,7 +171,7 @@ export default function BarangClient({ initialData, kategoriList, gradeList, can
           )}
 
           <button onClick={refresh} disabled={loading} className="ml-auto text-gray-400 hover:text-gray-600">
-            <RefreshCw className={cn('w-4 h-4', loading && 'animate-spin')} />
+            <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
           </button>
         </div>
       </div>
@@ -233,63 +200,47 @@ export default function BarangClient({ initialData, kategoriList, gradeList, can
                     <p>Tidak ada data</p>
                   </td>
                 </tr>
-              ) : filtered.map(b => (
-                <tr key={b.id} className="hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 font-mono text-xs text-gray-600">{b.kode}</td>
-                  <td className="px-4 py-3">
-                    <div>
-                      <p className="font-medium text-gray-900">{b.nama}</p>
-                      {b.merk && <p className="text-xs text-gray-400">{b.merk}</p>}
-                      {b.deskripsi && <p className="text-xs text-gray-300 truncate max-w-[200px]">{b.deskripsi}</p>}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-gray-600">{b.kategori_nama || '-'}</td>
-                  <td className="px-4 py-3">
-                    {b.grade_nama ? (
-                      <span className="inline-block px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-xs font-medium border border-blue-100">
-                        {b.grade_nama}
-                      </span>
-                    ) : '-'}
-                  </td>
-                  <td className="px-4 py-3 text-right font-medium text-gray-800">
-                    {formatRupiah(b.harga_jual)}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <span className={cn(
-                      'inline-block px-2 py-0.5 rounded-md text-xs font-bold',
-                      b.stok_rendah
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-green-100 text-green-700'
-                    )}>
-                      {b.stok}
-                    </span>
-                    {b.stok_rendah && (
-                      <span className="ml-1 text-orange-500 text-xs">(min: {b.stok_min})</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-center text-xs text-gray-500">
-                    {b.garansi_hari ? `${b.garansi_hari} hari` : '-'}
-                  </td>
-                  {canEdit && (
+              ) : (
+                filtered.map((b) => (
+                  <tr key={b.id} className="hover:bg-gray-50 transition">
+                    <td className="px-4 py-3 font-mono text-xs text-gray-600">{b.kode}</td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => { setEditItem(b); setShowForm(true) }}
-                          className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirm(b.id)}
-                          className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                      <div>
+                        <p className="font-medium text-gray-900">{b.nama}</p>
+                        {b.merk && <p className="text-xs text-gray-400">{b.merk}</p>}
+                        {b.deskripsi && <p className="text-xs text-gray-300 truncate max-w-[200px]">{b.deskripsi}</p>}
                       </div>
                     </td>
-                  )}
-                </tr>
-              ))}
+                    <td className="px-4 py-3 text-gray-600">{b.kategori_nama || "-"}</td>
+                    <td className="px-4 py-3">{b.grade_nama ? <span className="inline-block px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-xs font-medium border border-blue-100">{b.grade_nama}</span> : "-"}</td>
+                    <td className="px-4 py-3 text-right font-medium text-gray-800">{formatRupiah(b.harga_jual)}</td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={cn("inline-block px-2 py-0.5 rounded-md text-xs font-bold", b.stok_rendah ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700")}>{b.stok}</span>
+                      {b.stok_rendah && <span className="ml-1 text-orange-500 text-xs">(min: {b.stok_min})</span>}
+                    </td>
+                    <td className="px-4 py-3 text-center text-xs text-gray-500">{b.garansi_hari ? `${b.garansi_hari} hari` : "-"}</td>
+                    {canEdit && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => {
+                              console.log("EDIT ITEM", b);
+                              setEditItem(b);
+                              setShowForm(true);
+                            }}
+                            className="p-1.5 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button onClick={() => setDeleteConfirm(b.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -301,8 +252,15 @@ export default function BarangClient({ initialData, kategoriList, gradeList, can
           item={editItem}
           kategoriList={kategoriList}
           gradeList={gradeList}
-          onClose={() => { setShowForm(false); setEditItem(null) }}
-          onSuccess={() => { setShowForm(false); setEditItem(null); refresh() }}
+          onClose={() => {
+            setShowForm(false);
+            setEditItem(null);
+          }}
+          onSuccess={() => {
+            setShowForm(false);
+            setEditItem(null);
+            refresh();
+          }}
         />
       )}
 
@@ -312,7 +270,10 @@ export default function BarangClient({ initialData, kategoriList, gradeList, can
           kategoriList={kategoriList}
           gradeList={gradeList}
           onClose={() => setShowImport(false)}
-          onSuccess={() => { setShowImport(false); refresh() }}
+          onSuccess={() => {
+            setShowImport(false);
+            refresh();
+          }}
         />
       )}
 
@@ -323,16 +284,10 @@ export default function BarangClient({ initialData, kategoriList, gradeList, can
             <h3 className="font-semibold text-gray-900 mb-2">Hapus Barang?</h3>
             <p className="text-sm text-gray-500 mb-5">Barang akan dinonaktifkan dan tidak muncul di daftar.</p>
             <div className="flex gap-3">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="flex-1 py-2 rounded-lg border border-gray-200 text-sm hover:bg-gray-50 transition"
-              >
+              <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2 rounded-lg border border-gray-200 text-sm hover:bg-gray-50 transition">
                 Batal
               </button>
-              <button
-                onClick={() => handleDelete(deleteConfirm)}
-                className="flex-1 py-2 rounded-lg bg-red-600 text-white text-sm hover:bg-red-700 transition"
-              >
+              <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-2 rounded-lg bg-red-600 text-white text-sm hover:bg-red-700 transition">
                 Hapus
               </button>
             </div>
@@ -340,5 +295,5 @@ export default function BarangClient({ initialData, kategoriList, gradeList, can
         </div>
       )}
     </div>
-  )
+  );
 }

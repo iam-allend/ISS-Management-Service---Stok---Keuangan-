@@ -439,7 +439,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                   type={field.type}
                   value={(notaForm as any)[field.key] || ""}
                   onChange={(e) => setNotaForm((prev) => ({ ...prev, [field.key]: e.target.value }))}
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
                 />
               </div>
             ))}
@@ -449,11 +449,11 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                 value={notaForm.catatan_nota || ""}
                 onChange={(e) => setNotaForm((prev) => ({ ...prev, catatan_nota: e.target.value }))}
                 rows={2}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 resize-none"
+                className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500 resize-none"
               />
             </div>
             <div className="col-span-2 flex gap-2">
-              <button onClick={() => setEditNota(false)} className="flex-1 py-2 rounded-lg border border-gray-200 text-sm hover:bg-gray-50">
+              <button onClick={() => setEditNota(false)} className="flex-1 py-2 rounded-lg border border-gray-300 text-gray-500 text-sm hover:bg-gray-50">
                 Batal
               </button>
               <button onClick={handleSaveNota} disabled={savingNota} className="flex-1 py-2 rounded-lg bg-gray-900 text-white text-sm disabled:opacity-60 flex items-center justify-center gap-2">
@@ -551,7 +551,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                     <input
                       value={itemForm.jenis_kerusakan || ""}
                       onChange={(e) => setItemForm((p: any) => ({ ...p, jenis_kerusakan: e.target.value }))}
-                      className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
                     />
                   </div>
                   <div>
@@ -559,7 +559,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                     <select
                       value={itemForm.teknisi_id || ""}
                       onChange={(e) => setItemForm((p: any) => ({ ...p, teknisi_id: e.target.value }))}
-                      className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
                     >
                       <option value="">— Pilih —</option>
                       {teknisiList.map((t) => (
@@ -578,7 +578,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                         min="0"
                         value={itemForm.biaya || 0}
                         onChange={(e) => setItemForm((p: any) => ({ ...p, biaya: Number(e.target.value) }))}
-                        className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                        className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
                       />
                     </div>
                   </div>
@@ -588,12 +588,12 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                       value={itemForm.keterangan || ""}
                       onChange={(e) => setItemForm((p: any) => ({ ...p, keterangan: e.target.value }))}
                       rows={2}
-                      className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 resize-none"
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500 resize-none"
                     />
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => setEditItemId(null)} className="flex-1 py-2 rounded-lg border border-gray-200 text-sm hover:bg-gray-50">
+                  <button onClick={() => setEditItemId(null)} className="flex-1 py-2 rounded-lg border border-gray-300 text-gray-500 text-sm hover:bg-gray-50">
                     Batal
                   </button>
                   <button onClick={() => handleSaveItem(item.id)} disabled={savingItem} className="flex-1 py-2 rounded-lg bg-gray-900 text-white text-sm disabled:opacity-60 flex items-center justify-center gap-2">
@@ -665,7 +665,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                           }))
                         }
                         placeholder="+ Tambah sparepart..."
-                        className="w-full pl-8 pr-3 py-2 text-xs rounded-lg border border-dashed border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-solid"
+                        className="w-full pl-8 pr-3 py-2 text-xs rounded-lg border border-dashed border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500 focus:border-solid"
                       />
                     </div>
                     {spFiltered.length > 0 && (
@@ -749,7 +749,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                     value={newItem.jenis_kerusakan}
                     onChange={(e) => setNewItem((p) => ({ ...p, jenis_kerusakan: e.target.value }))}
                     placeholder="misal: LCD pecah, baterai drop"
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
                   />
                 </div>
                 <div>
@@ -757,7 +757,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                   <select
                     value={newItem.teknisi_id}
                     onChange={(e) => setNewItem((p) => ({ ...p, teknisi_id: e.target.value }))}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
                   >
                     <option value="">— Pilih —</option>
                     {teknisiList.map((t) => (
@@ -776,7 +776,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                       min="0"
                       value={newItem.biaya}
                       onChange={(e) => setNewItem((p) => ({ ...p, biaya: Number(e.target.value) }))}
-                      className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                      className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500"
                     />
                   </div>
                 </div>
@@ -787,7 +787,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                     onChange={(e) => setNewItem((p) => ({ ...p, keterangan: e.target.value }))}
                     rows={2}
                     placeholder="Detail kondisi, catatan perbaikan..."
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 resize-none"
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500 resize-none"
                   />
                 </div>
               </div>
@@ -816,7 +816,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                           step="0.001"
                           value={sp.jumlah}
                           onChange={(e) => updateNewItemSparepartJumlah(sp.barang_id, Number(e.target.value))}
-                          className="w-14 px-2 py-1 text-xs rounded border border-gray-200 text-center focus:outline-none focus:ring-1 focus:ring-gray-300"
+                          className="w-14 px-2 py-1 text-xs rounded border border-gray-200 text-center focus:outline-none focus:ring-1 focus:ring-gray-300 text-gray-500"
                         />
                         <button onClick={() => removeNewItemSparepart(sp.barang_id)} className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 transition">
                           <X className="w-3.5 h-3.5" />
@@ -832,7 +832,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                       value={newSpSearch}
                       onChange={(e) => setNewSpSearch(e.target.value)}
                       placeholder="Cari sparepart untuk ditambahkan..."
-                      className="w-full pl-8 pr-3 py-2 text-xs rounded-lg border border-dashed border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-solid"
+                      className="w-full pl-8 pr-3 py-2 text-xs rounded-lg border border-dashed border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-500 focus:border-solid"
                     />
                     {newSpFiltered.length > 0 && (
                       <div className="absolute top-full mt-1 left-0 right-0 bg-white rounded-lg border border-gray-100 shadow-lg z-10 overflow-hidden">
@@ -857,7 +857,7 @@ export default function ServiceDetailClient({ nota, items: initialItems, teknisi
                     setNewItemSpareparts([]);
                     setNewSpSearch("");
                   }}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm hover:bg-gray-50"
+                  className="flex-1 py-2.5 rounded-xl border border-gray-300 text-gray-500 text-sm hover:bg-gray-50"
                 >
                   Batal
                 </button>
